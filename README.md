@@ -1,4 +1,4 @@
- # BlackOut
+ # Better Banner
 An SCP sl plugin that allows you to put banners
 
 # Description: 

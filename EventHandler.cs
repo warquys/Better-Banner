@@ -13,6 +13,8 @@ namespace Better_Server_Banner
     {
         #region Properties & Variables
         public SyncList<SyncUnit> UnitList => RespawnManager.Singleton.NamingManager.AllUnitNames;
+        
+        public bool _firsRoundStart = true;
 
         private readonly Config _config;
 
@@ -30,11 +32,13 @@ namespace Better_Server_Banner
         public void AttachEvent()
         {
             Exiled.Events.Handlers.Server.RoundStarted += OnRoundStart;
+            Exiled.Events.Handlers.Server.RoundEnded += OnRoundEnded;
         }
 
         public void DetachEvent()
         {
             Exiled.Events.Handlers.Server.RoundStarted -= OnRoundStart;
+            Exiled.Events.Handlers.Server.RoundEnded -= OnRoundEnded;
         }
 
         //Synapse3 Code 
@@ -78,9 +82,15 @@ namespace Better_Server_Banner
         #endregion
 
         #region Events
+        private void OnRoundEnded(RoundEndedEventArgs ev)
+        {
+            _firsRoundStart = true;
+        }
 
         private void OnRoundStart()
         {
+            if (!_firsRoundStart) return;
+
             var teams = Enum.GetValues(typeof(Team)).ToArray<Team>();
             var isDefaultSet = !String.IsNullOrWhiteSpace(_config.ByDefault);
 
@@ -101,6 +111,8 @@ namespace Better_Server_Banner
                         AddUnit(_config.ByDefault, team);
                 }
             }
+
+            _firsRoundStart = false;
         }
         #endregion
     }
